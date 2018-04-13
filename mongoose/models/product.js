@@ -60,14 +60,29 @@ module.exports = {
     findByPage: (pageNo, pageSize) => {
         return new Promise((resolve) => {
             Product.count({}, (err, count) => {
-                Product.find().skip((pageNo - 1) * pageSize).limit(pageSize).exec((err, doc) => {
-                    resolve({
-                       totalPage: Math.ceil(count / pageSize),
-                       totalSize: count,
-                       pageNo,
-                       pageSize,
-                       list:doc
-                   })
+                Product.find().populate("imageId").skip((pageNo - 1) * pageSize).limit(pageSize).sort('createTime').exec((err, doc) => {
+                    
+                    const productIdArr = doc.map((item) => {
+                        return item.id
+                    });
+                    Spec.findAll(productIdArr).then((specs) => {
+                        const list = JSON.parse(JSON.stringify(doc));
+                        for(let i = 0; i < list.length; i++){
+                            for(let j = 0; j < specs.length; j++){
+                                if(list[i].id == specs[j].productId){
+                                    list[i].specs = list[i].specs || [];
+                                    list[i].specs.push(specs[j])
+                                }
+                            }
+                        }
+                        resolve({
+                            totalPage: Math.ceil(count / pageSize),
+                            totalSize: count,
+                            pageNo,
+                            pageSize,
+                            list
+                        })
+                    })
                 });
                 
            })

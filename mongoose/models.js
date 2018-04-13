@@ -1,3 +1,6 @@
+
+const Schema = require('mongoose').Schema;
+
 module.exports = {
     product: {
         id: {
@@ -8,7 +11,10 @@ module.exports = {
         name: String,
         foreignName: String,
         remark: String,
-        imageId: Number,
+        imageId: [{
+            type: Schema.Types.ObjectId,
+            ref: 'image'
+        }],
         specId: Array,
         createTime: {
             type: Date,
@@ -26,7 +32,10 @@ module.exports = {
         },
         productId: Number,
         type: String,
-        addrId: Number,
+        addrId: [{
+            type: Schema.Types.ObjectId,
+            ref: 'address'
+        }],
         price: String,
         createTime: {
             type: Date,
@@ -43,7 +52,6 @@ module.exports = {
             unique: true
         },
         name: String,
-        productId: Number,
         createTime: {
             type: Date,
             default:  Date.now

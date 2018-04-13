@@ -39,5 +39,15 @@ module.exports =  {
                 resolve(doc)
             })
         })
+    },
+    findAll: (productIdArr) => {
+        return new Promise((resolve) => {
+            Spec.find({productId:{$in:productIdArr}}).populate("addrId").exec((err, doc) => {
+                if(err){
+                    console.dir(err)
+                }
+                resolve(doc)
+            })
+        })
     }
 }

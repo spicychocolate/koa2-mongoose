@@ -13,9 +13,8 @@ router.post('/product/add',body({
       const fields = this.request.fields;
       const imgPath = this.request.files[0].path || '';
     
-      let imgId = '', productId = '';
-      imgId = productId = new Date().getTime();
-      yield Image.create(imgId,imgPath);
+      const productId = new Date().getTime();
+      const image = yield Image.create(productId,imgPath);
 
       const specIdArr = [];
       const specs = JSON.parse(fields.spec);
@@ -26,7 +25,7 @@ router.post('/product/add',body({
       }
       const product = JSON.parse(fields.product);
       product.specId = specIdArr;
-      product.imageId = imgId;
+      product.imageId = image._id;
       product.id = productId;
       yield Product.create(product).then((res) => {
         this.body = {
@@ -75,7 +74,6 @@ router.post('/product/update',body({
 
 router.post('/product/list', body(),function * (){
     const fields = this.request.fields;
-    console.log(this.request)
     yield Product.findByPage(Number(fields.pageNo),Number(fields.pageSize)).then((res) => {
         this.body = {
             code: res ? 200 : 500,
